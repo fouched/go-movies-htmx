@@ -10,6 +10,7 @@ func routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Get("/", handlers.Home)
+	mux.Get("/movies", handlers.Movies)
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
