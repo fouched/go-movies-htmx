@@ -1,7 +1,25 @@
 {{template "base" .}}
 {{define "content"}}
-<div class="text-center">
+<div>
     <h2>Movies</h2>
     <hr/>
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Release Date</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody>
+            {{ range .Data}}
+            <tr>
+                <td><a href="/movies/{{ .ID }}">{{ .Title }}</a></td>
+                <td>{{ .ReleaseDate.Format "2006-01-02" }}</td>
+                <td>{{ .MppaRating }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
 </div>
 {{end}}
