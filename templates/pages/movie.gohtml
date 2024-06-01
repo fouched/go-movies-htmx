@@ -1,0 +1,9 @@
+{{template "base" .}}
+{{define "content"}}
+<div>
+    <h2>Movie: {{ .Data.movie.Title}}</h2>
+    <small><em>{{ .Data.movie.ReleaseDate.Format "2006-01-02" }}, {{ .Data.movie.Runtime }}, Rated {{ .Data.movie.MppaRating }}</em></small>
+    <hr />
+    <p>{{ .Data.movie.Description }}</p>
+</div>
+{{end}}
