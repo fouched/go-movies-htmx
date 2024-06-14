@@ -5,6 +5,8 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/fouched/go-movies-htmx/internal/config"
 	"github.com/fouched/go-movies-htmx/internal/handlers"
+	"github.com/fouched/go-movies-htmx/internal/helpers"
+	"github.com/fouched/go-movies-htmx/internal/render"
 	"log"
 	"net/http"
 	"time"
@@ -42,4 +44,6 @@ func initApp() {
 
 	hc := handlers.NewConfig(&app)
 	handlers.NewHandlers(hc)
+	render.NewRenderer(&app)
+	helpers.NewHelpers(&app)
 }

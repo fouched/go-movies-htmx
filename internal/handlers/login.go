@@ -7,10 +7,20 @@ import (
 	"net/http"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func (a *HandlerConfig) Login(w http.ResponseWriter, r *http.Request) {
+
+	data := make(map[string]interface{})
+	if a.App.Session.Exists(r.Context(), "AuthError") {
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "Authentication required, please log in",
+		}
+	}
 
 	templates := []string{"/pages/login.gohtml", "/components/alert.gohtml"}
-	render.Templates(w, r, templates, true, &models.TemplateData{})
+	render.Templates(w, r, templates, true, &models.TemplateData{
+		Data: data,
+	})
 }
 
 func (a *HandlerConfig) LoginPost(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +35,7 @@ func (a *HandlerConfig) LoginPost(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 
 	if email == "a" {
-		a.App.Session.Put(r.Context(), "HasAdmin", true)
+		a.App.Session.Put(r.Context(), "userId", 1)
 		// Good practice: prevent a post re-submit with a http redirect
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
@@ -39,4 +49,11 @@ func (a *HandlerConfig) LoginPost(w http.ResponseWriter, r *http.Request) {
 	render.Templates(w, r, templates, true, &models.TemplateData{
 		Data: data,
 	})
+}
+
+func (a *HandlerConfig) Logout(w http.ResponseWriter, r *http.Request) {
+
+	a.App.Session.Remove(r.Context(), "userId")
+	templates := []string{"/pages/home.gohtml"}
+	render.Templates(w, r, templates, true, &models.TemplateData{})
 }

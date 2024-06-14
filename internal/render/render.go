@@ -2,12 +2,19 @@ package render
 
 import (
 	"fmt"
+	"github.com/fouched/go-movies-htmx/internal/config"
 	"github.com/fouched/go-movies-htmx/internal/models"
 	"html/template"
 	"net/http"
 )
 
+var app *config.AppConfig
 var pathToTemplates = "./templates"
+
+// NewRenderer sets the config for the template package
+func NewRenderer(a *config.AppConfig) {
+	app = a
+}
 
 // Templates can render multiple templates. "Parent" templates should be defined first
 func Templates(w http.ResponseWriter, r *http.Request, tmpl []string, addBaseTemplate bool, td *models.TemplateData) {
@@ -20,6 +27,7 @@ func Templates(w http.ResponseWriter, r *http.Request, tmpl []string, addBaseTem
 		tmpl = append(tmpl, pathToTemplates+"/base.layout.gohtml")
 	}
 
+	td = AddDefaultData(td, r)
 	parsedTemplate, _ := template.ParseFiles(tmpl...)
 	err := parsedTemplate.Execute(w, td)
 	if err != nil {
@@ -27,4 +35,13 @@ func Templates(w http.ResponseWriter, r *http.Request, tmpl []string, addBaseTem
 		return
 	}
 
+}
+
+func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+
+	if app.Session.Exists(r.Context(), "userId") {
+		td.IsAuthenticated = 1
+	}
+
+	return td
 }
