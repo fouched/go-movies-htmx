@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var data = make(map[string]interface{})
+var moviesData = make(map[string]interface{})
 
 func AllMovies(w http.ResponseWriter, r *http.Request) {
 
@@ -18,7 +18,7 @@ func AllMovies(w http.ResponseWriter, r *http.Request) {
 	templates := []string{"/pages/movies.gohtml"}
 
 	render.Templates(w, r, templates, true, &models.TemplateData{
-		Data: data,
+		Data: moviesData,
 	})
 }
 
@@ -28,9 +28,9 @@ func Movie(w http.ResponseWriter, r *http.Request) {
 
 	layout := "2006-01-02"
 	releaseDate, _ := time.Parse(layout, "1986-03-07")
-	data["movie"] = models.Movie{
+	moviesData["movie"] = models.Movie{
 		ID:          1,
-		Title:       "Highlander",
+		Title:       "Another Highlander",
 		ReleaseDate: releaseDate,
 		Runtime:     116,
 		MppaRating:  "R",
@@ -39,17 +39,17 @@ func Movie(w http.ResponseWriter, r *http.Request) {
 
 	templates := []string{"/pages/movie.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{
-		Data: data,
+		Data: moviesData,
 	})
 }
 
 func InitInitialState() {
 
 	layout := "2006-01-02"
-	if len(data) == 0 {
+	if len(moviesData) == 0 {
 		releaseDate, _ := time.Parse(layout, "1986-03-07")
-		data[strconv.Itoa(len(data)+1)] = models.Movie{
-			ID:          len(data) + 1,
+		moviesData[strconv.Itoa(len(moviesData)+1)] = models.Movie{
+			ID:          len(moviesData) + 1,
 			Title:       "Highlander",
 			ReleaseDate: releaseDate,
 			Runtime:     116,
@@ -58,8 +58,8 @@ func InitInitialState() {
 		}
 
 		releaseDate, _ = time.Parse(layout, "1981-06-12")
-		data[strconv.Itoa(len(data)+1)] = models.Movie{
-			ID:          len(data) + 1,
+		moviesData[strconv.Itoa(len(moviesData)+1)] = models.Movie{
+			ID:          len(moviesData) + 1,
 			Title:       "Raiders of the lost Ark",
 			ReleaseDate: releaseDate,
 			Runtime:     115,
