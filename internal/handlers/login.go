@@ -17,7 +17,7 @@ func (a *HandlerConfig) Login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	templates := []string{"/pages/login.gohtml", "/components/alert.gohtml"}
+	templates := []string{"/pages/login.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{
 		Data: data,
 	})
@@ -25,27 +25,31 @@ func (a *HandlerConfig) Login(w http.ResponseWriter, r *http.Request) {
 
 func (a *HandlerConfig) LoginPost(w http.ResponseWriter, r *http.Request) {
 
+	data := make(map[string]interface{})
 	pe := r.ParseForm()
-	//TODO: we need proper error handling
+
 	if pe != nil {
 		fmt.Println("Cannot parse form", pe)
-	}
-
-	email := r.Form.Get("email")
-	data := make(map[string]interface{})
-
-	if email == "a" {
-		a.App.Session.Put(r.Context(), "userId", 1)
-		// Good practice: prevent a post re-submit with a http redirect
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	} else {
 		data["Alert"] = models.Alert{
 			Class:   "alert-danger",
-			Message: "Invalid credentials",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+	} else {
+		email := r.Form.Get("email")
+
+		if email == "a" {
+			a.App.Session.Put(r.Context(), "userId", 1)
+			// Good practice: prevent a post re-submit with a http redirect
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		} else {
+			data["Alert"] = models.Alert{
+				Class:   "alert-danger",
+				Message: "Invalid credentials",
+			}
 		}
 	}
 
-	templates := []string{"/pages/login.gohtml", "/components/alert.gohtml"}
+	templates := []string{"/pages/login.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{
 		Data: data,
 	})

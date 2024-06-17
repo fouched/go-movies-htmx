@@ -1,4 +1,4 @@
-package handlers
+package admin
 
 import (
 	"github.com/fouched/go-movies-htmx/internal/models"
@@ -6,9 +6,9 @@ import (
 	"net/http"
 )
 
-func GraphQL(w http.ResponseWriter, r *http.Request) {
+func Catalogue(w http.ResponseWriter, r *http.Request) {
 
-	templates := []string{"/pages/graphql.gohtml"}
+	templates := []string{"/pages/admin/catalogue.gohtml"}
 
 	render.Templates(w, r, templates, true, &models.TemplateData{})
 }

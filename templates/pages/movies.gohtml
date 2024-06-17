@@ -12,11 +12,11 @@
         </tr>
         </thead>
         <tbody>
-            {{ range .Data}}
+            {{ range .Data.movies}}
             <tr>
                 <td><a href="/movies/{{ .ID }}">{{ .Title }}</a></td>
                 <td>{{ .ReleaseDate.Format "2006-01-02" }}</td>
-                <td>{{ .MppaRating }}</td>
+                <td>{{ .MPAARating }}</td>
             </tr>
             {{ end }}
         </tbody>

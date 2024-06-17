@@ -28,8 +28,8 @@ func routes() http.Handler {
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(Auth)
 		mux.Get("/movie", admin.EditMovie)
-		mux.Get("/catalogue", handlers.Catalogue)
-		mux.Get("/graphql", handlers.GraphQL)
+		mux.Get("/catalogue", admin.Catalogue)
+		mux.Get("/graphql", admin.GraphQL)
 	})
 
 	return mux

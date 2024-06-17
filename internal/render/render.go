@@ -24,7 +24,7 @@ func Templates(w http.ResponseWriter, r *http.Request, tmpl []string, addBaseTem
 	}
 
 	if addBaseTemplate {
-		tmpl = append(tmpl, pathToTemplates+"/base.layout.gohtml")
+		tmpl = append(tmpl, pathToTemplates+"/components/alert.gohtml", pathToTemplates+"/base.layout.gohtml")
 	}
 
 	td = AddDefaultData(td, r)

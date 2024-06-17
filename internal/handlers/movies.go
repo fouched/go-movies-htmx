@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/fouched/go-movies-htmx/internal/models"
 	"github.com/fouched/go-movies-htmx/internal/render"
+	"github.com/fouched/go-movies-htmx/internal/repo"
 	"github.com/go-chi/chi/v5"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -14,11 +14,22 @@ var moviesData = make(map[string]interface{})
 
 func AllMovies(w http.ResponseWriter, r *http.Request) {
 
-	InitInitialState()
+	data := make(map[string]interface{})
+	movies, err := repo.AllMovies()
+	if err != nil {
+		fmt.Println(err)
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+	} else {
+		data["movies"] = movies
+	}
+
 	templates := []string{"/pages/movies.gohtml"}
 
 	render.Templates(w, r, templates, true, &models.TemplateData{
-		Data: moviesData,
+		Data: data,
 	})
 }
 
@@ -32,8 +43,8 @@ func Movie(w http.ResponseWriter, r *http.Request) {
 		ID:          1,
 		Title:       "Another Highlander",
 		ReleaseDate: releaseDate,
-		Runtime:     116,
-		MppaRating:  "R",
+		RunTime:     116,
+		MPAARating:  "R",
 		Description: "Some long description",
 	}
 
@@ -41,30 +52,4 @@ func Movie(w http.ResponseWriter, r *http.Request) {
 	render.Templates(w, r, templates, true, &models.TemplateData{
 		Data: moviesData,
 	})
-}
-
-func InitInitialState() {
-
-	layout := "2006-01-02"
-	if len(moviesData) == 0 {
-		releaseDate, _ := time.Parse(layout, "1986-03-07")
-		moviesData[strconv.Itoa(len(moviesData)+1)] = models.Movie{
-			ID:          len(moviesData) + 1,
-			Title:       "Highlander",
-			ReleaseDate: releaseDate,
-			Runtime:     116,
-			MppaRating:  "R",
-			Description: "Some long description",
-		}
-
-		releaseDate, _ = time.Parse(layout, "1981-06-12")
-		moviesData[strconv.Itoa(len(moviesData)+1)] = models.Movie{
-			ID:          len(moviesData) + 1,
-			Title:       "Raiders of the lost Ark",
-			ReleaseDate: releaseDate,
-			Runtime:     115,
-			MppaRating:  "PG-13",
-			Description: "Some long description",
-		}
-	}
 }
