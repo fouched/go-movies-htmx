@@ -7,7 +7,6 @@ type TemplateData struct {
 	FloatMap        map[string]float32
 	BoolMap         map[string]bool
 	Data            map[string]interface{}
-	ComponentMap    map[string]interface{}
 	CSRFToken       string
 	Success         string
 	Warning         string
