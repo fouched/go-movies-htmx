@@ -3,10 +3,7 @@ package repo
 import (
 	"context"
 	"github.com/fouched/go-movies-htmx/internal/models"
-	"time"
 )
-
-const dbTimeout = time.Second * 3
 
 func AllMovies() ([]*models.Movie, error) {
 

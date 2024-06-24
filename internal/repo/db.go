@@ -11,6 +11,8 @@ import (
 // db is the database connection pool
 var db *sql.DB
 
+const dbTimeout = time.Second * 3
+
 func CreateDbPool(dsn string) (*sql.DB, error) {
 
 	conn, err := sql.Open("pgx", dsn)

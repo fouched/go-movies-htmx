@@ -15,7 +15,7 @@ func routes() http.Handler {
 	mux.Use(SessionLoad)
 
 	mux.Get("/", handlers.Instance.Home)
-	mux.Get("/login", handlers.Instance.Login)
+	mux.Get("/login", handlers.Instance.ShowLogin)
 	mux.Post("/login", handlers.Instance.LoginPost)
 	mux.Get("/logout", handlers.Instance.Logout)
 	mux.Get("/movies", handlers.AllMovies)

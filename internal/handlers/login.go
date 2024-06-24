@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"github.com/fouched/go-movies-htmx/internal/models"
 	"github.com/fouched/go-movies-htmx/internal/render"
+	"github.com/fouched/go-movies-htmx/internal/repo"
+	"log"
 	"net/http"
 )
 
-func (a *HandlerConfig) Login(w http.ResponseWriter, r *http.Request) {
+func (a *HandlerConfig) ShowLogin(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
 	if a.App.Session.Exists(r.Context(), "AuthError") {
@@ -23,7 +25,10 @@ func (a *HandlerConfig) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// LoginPost handles logging the user in
 func (a *HandlerConfig) LoginPost(w http.ResponseWriter, r *http.Request) {
+	// good practice renew token on login
+	_ = a.App.Session.RenewToken(r.Context())
 
 	data := make(map[string]interface{})
 	pe := r.ParseForm()
@@ -34,30 +39,42 @@ func (a *HandlerConfig) LoginPost(w http.ResponseWriter, r *http.Request) {
 			Class:   "alert-danger",
 			Message: "An unexpected error occurred, please try again later.",
 		}
-	} else {
-		email := r.Form.Get("email")
 
-		if email == "a" {
-			a.App.Session.Put(r.Context(), "userId", 1)
-			// Good practice: prevent a post re-submit with a http redirect
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		} else {
-			data["Alert"] = models.Alert{
-				Class:   "alert-danger",
-				Message: "Invalid credentials",
-			}
-		}
+		templates := []string{"/pages/login.gohtml"}
+		render.Templates(w, r, templates, true, &models.TemplateData{
+			Data: data,
+		})
+		return
 	}
 
-	templates := []string{"/pages/login.gohtml"}
-	render.Templates(w, r, templates, true, &models.TemplateData{
-		Data: data,
-	})
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+	id, _, err := repo.Authenticate(email, password)
+	if err != nil {
+		log.Println(err)
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "Invalid credentials",
+		}
+
+		templates := []string{"/pages/login.gohtml"}
+		render.Templates(w, r, templates, true, &models.TemplateData{
+			Data: data,
+		})
+		return
+	}
+
+	a.App.Session.Put(r.Context(), "userId", id)
+	// Good practice: prevent a post re-submit with a http redirect
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 }
 
+// Logout logs a user out
 func (a *HandlerConfig) Logout(w http.ResponseWriter, r *http.Request) {
 
-	a.App.Session.Remove(r.Context(), "userId")
+	_ = a.App.Session.Destroy(r.Context())
+	_ = a.App.Session.RenewToken(r.Context())
 	templates := []string{"/pages/home.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{})
 }

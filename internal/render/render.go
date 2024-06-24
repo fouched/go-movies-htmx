@@ -3,6 +3,7 @@ package render
 import (
 	"fmt"
 	"github.com/fouched/go-movies-htmx/internal/config"
+	"github.com/fouched/go-movies-htmx/internal/helpers"
 	"github.com/fouched/go-movies-htmx/internal/models"
 	"html/template"
 	"net/http"
@@ -39,7 +40,7 @@ func Templates(w http.ResponseWriter, r *http.Request, tmpl []string, addBaseTem
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 
-	if app.Session.Exists(r.Context(), "userId") {
+	if helpers.IsAuthenticated(r) {
 		td.IsAuthenticated = 1
 	}
 
