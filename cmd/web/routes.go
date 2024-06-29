@@ -27,7 +27,7 @@ func routes() http.Handler {
 
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(Auth)
-		mux.Get("/movie", admin.EditMovie)
+		mux.Get("/movie", admin.Movie)
 		mux.Get("/catalogue", admin.Catalogue)
 		mux.Get("/graphql", admin.GraphQL)
 	})

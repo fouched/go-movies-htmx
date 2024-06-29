@@ -1,7 +1,80 @@
 {{template "base" .}}
 {{define "content"}}
-<div class="text-center">
-    <h2>Edit Movie</h2>
+<div>
+    <h2>{{.StringMap.title}}</h2>
     <hr/>
+    <form action="{{.StringMap.action}}" method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input
+                    id="title"
+                    name="title"
+                    type="text"
+                    class="form-control"
+                    placeholder=""
+                    autocomplete="off"
+                    value="{{.Data.movie.Title}}"
+            />
+            {{with .Form.Errors.Get "title"}}
+                <div class="text-danger">{{.}}</div>
+            {{end}}
+        </div>
+        <div class="mb-3">
+            <label for="releaseDate" class="form-label">Release Date</label>
+            <input
+                    id="releaseDate"
+                    name="releaseDate"
+                    type="date"
+                    class="form-control"
+                    value="{{.Data.movie.ReleaseDate.Format "2006-01-02"}}"
+            />
+            {{with .Form.Errors.Get "releaseDate"}}
+                <div class="text-danger">{{.}}</div>
+            {{end}}
+        </div>
+        <div class="mb-3">
+            <label for="runtime" class="form-label">
+                Runtime
+            </label>
+            <input
+                    id="runtime"
+                    name="runtime"
+                    type="number"
+                    class="form-control"
+                    placeholder=""
+                    autocomplete="off"
+                    value="{{.Data.movie.RunTime}}"
+            />
+            {{with .Form.Errors.Get "runtime"}}
+                <div class="text-danger">{{.}}</div>
+            {{end}}
+        </div>
+        <div class="mb-3">
+            <label for="mpaaRating" class="form-label">MPAA Rating</label>
+            <select
+                    id="mpaaRating"
+                    name="mpaaRating"
+                    class="form-select"
+            >
+                <option value="">Choose...</option>
+                {{range .Data.ratings }}
+                    <option value="{{.Value}}">{{.Text}}</option>
+                {{end}}
+            </select>
+            <div class="d-none">Choose</div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+                    id="description"
+                    name="description"
+                    class="form-control"
+                    rows="3"
+            >{{.Data.movie.Description}}</textarea>
+            {{with .Form.Errors.Get "description"}}
+                <div class="text-danger">{{.}}</div>
+            {{end}}
+        </div>
+    </form>
 </div>
 {{end}}
