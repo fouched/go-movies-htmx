@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Genres(w http.ResponseWriter, r *http.Request) {
+func (a *HandlerConfig) Genres(w http.ResponseWriter, r *http.Request) {
 
 	templates := []string{"/pages/genres.gohtml"}
 

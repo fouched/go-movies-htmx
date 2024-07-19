@@ -36,7 +36,7 @@
                             <a href="/movies" class="list-group-item list-group-item-action">Movies</a>
                             <a href="/genres" class="list-group-item list-group-item-action">Genres</a>
                             {{if eq .IsAuthenticated 1 }}
-                                <a href="/admin/movie" class="list-group-item list-group-item-action">Add Movie</a>
+                                <a href="/admin/movies/add" class="list-group-item list-group-item-action">Add Movie</a>
                                 <a href="/admin/catalogue" class="list-group-item list-group-item-action">Manage Catalogue</a>
                                 <a href="/admin/graphql" class="list-group-item list-group-item-action">GraphQL</a>
                             {{end}}

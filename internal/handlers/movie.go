@@ -7,13 +7,12 @@ import (
 	"github.com/fouched/go-movies-htmx/internal/repo"
 	"github.com/go-chi/chi/v5"
 	"net/http"
-	"time"
+	"strconv"
 )
 
 var moviesData = make(map[string]interface{})
 
-func AllMovies(w http.ResponseWriter, r *http.Request) {
-
+func (a *HandlerConfig) AllMovies(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	movies, err := repo.AllMovies()
 	if err != nil {
@@ -33,23 +32,25 @@ func AllMovies(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Movie(w http.ResponseWriter, r *http.Request) {
+func (a *HandlerConfig) Movie(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	fmt.Println("Viewing movie with id:", id)
+	movieID, err := strconv.Atoi(id)
 
-	layout := "2006-01-02"
-	releaseDate, _ := time.Parse(layout, "1986-03-07")
-	moviesData["movie"] = models.Movie{
-		ID:          1,
-		Title:       "Another Highlander",
-		ReleaseDate: releaseDate,
-		RunTime:     116,
-		MPAARating:  "R",
-		Description: "Some long description",
+	data := make(map[string]interface{})
+
+	movie, err := repo.GetMovieByID(movieID)
+	if err != nil {
+		fmt.Println(err)
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+	} else {
+		data["Movie"] = movie
 	}
 
 	templates := []string{"/pages/movie.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{
-		Data: moviesData,
+		Data: data,
 	})
 }

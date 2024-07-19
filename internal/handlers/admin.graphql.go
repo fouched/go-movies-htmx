@@ -1,4 +1,4 @@
-package admin
+package handlers
 
 import (
 	"github.com/fouched/go-movies-htmx/internal/models"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func GraphQL(w http.ResponseWriter, r *http.Request) {
+func (a *HandlerConfig) AdminGraphQL(w http.ResponseWriter, r *http.Request) {
 
 	templates := []string{"/pages/admin/graphql.gohtml"}
 

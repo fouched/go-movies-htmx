@@ -1,9 +1,16 @@
 {{template "base" .}}
 {{define "content"}}
 <div>
-    <h2>Movie: {{ .Data.movie.Title}}</h2>
-    <small><em>{{ .Data.movie.ReleaseDate.Format "2006-01-02" }}, {{ .Data.movie.RunTime }}, Rated {{ .Data.movie.MPAARating }}</em></small>
-    <hr />
-    <p>{{ .Data.movie.Description }}</p>
+    <h2>Movie: {{.Data.Movie.Title}}</h2>
+    <small><em>{{.Data.Movie.ReleaseDate.Format "2006-01-02" }}, {{.Data.Movie.RunTime}}, Rated {{.Data.Movie.MPAARating}}</em></small>
+    <br/>
+    {{range .Data.Movie.Genres}}
+        <span class="badge bg-secondary me-2">{{.Genre}}</span>
+    {{end}}
+    <hr/>
+    {{if ne .Data.Movie.Image ""}}
+        <img src="https://image.tmdb.org/t/p/w200{{.Data.Movie.Image}}" alt="poster" />
+    {{end}}
+    <p>{{ .Data.Movie.Description }}</p>
 </div>
 {{end}}

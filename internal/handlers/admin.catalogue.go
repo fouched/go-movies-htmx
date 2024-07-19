@@ -1,4 +1,4 @@
-package admin
+package handlers
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Catalogue(w http.ResponseWriter, r *http.Request) {
+func (a *HandlerConfig) AdminCatalogue(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
 	movies, err := repo.AllMovies()

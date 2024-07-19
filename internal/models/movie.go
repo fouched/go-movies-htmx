@@ -12,4 +12,6 @@ type Movie struct {
 	Image       string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	Genres      []*Genre
+	GenresArray []int
 }
