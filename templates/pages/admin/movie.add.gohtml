@@ -21,32 +21,48 @@
         </div>
         <div class="mb-3">
             <label for="releaseDate" class="form-label">Release Date</label>
-            <input
-                    id="releaseDate"
-                    name="releaseDate"
-                    type="date"
-                    class="form-control"
-                    value="{{.Data.movie.ReleaseDate.Format "2006-01-02"}}"
-            />
-            {{with .Form.Errors.Get "releaseDate"}}
-                <div class="text-danger">{{.}}</div>
+            {{if .Form.Errors.Get "releaseDate"}}
+                <input
+                        id="releaseDate"
+                        name="releaseDate"
+                        type="date"
+                        class="form-control"
+                />
+                <div class="text-danger">{{.Form.Errors.Get "releaseDate"}}</div>
+            {{else}}
+                <input
+                        id="releaseDate"
+                        name="releaseDate"
+                        type="date"
+                        class="form-control"
+                        value="{{.Data.movie.ReleaseDate.Format "2006-01-02"}}"
+                />
             {{end}}
         </div>
         <div class="mb-3">
             <label for="runtime" class="form-label">
                 Runtime
             </label>
-            <input
-                    id="runtime"
-                    name="runtime"
-                    type="number"
-                    class="form-control"
-                    placeholder=""
-                    autocomplete="off"
-                    value="{{.Data.movie.RunTime}}"
-            />
-            {{with .Form.Errors.Get "runtime"}}
-                <div class="text-danger">{{.}}</div>
+            {{if .Form.Errors.Get "runtime"}}
+                <input
+                        id="runtime"
+                        name="runtime"
+                        type="number"
+                        class="form-control"
+                        placeholder=""
+                        autocomplete="off"
+                />
+                <div class="text-danger">{{.Form.Errors.Get "runtime"}}</div>
+            {{else}}
+                <input
+                        id="runtime"
+                        name="runtime"
+                        type="number"
+                        class="form-control"
+                        placeholder=""
+                        autocomplete="off"
+                        value="{{.Data.movie.RunTime}}"
+                />
             {{end}}
         </div>
         <div class="mb-3">
@@ -58,10 +74,12 @@
             >
                 <option value="">Choose...</option>
                 {{range .Data.ratings }}
-                    <option value="{{.Value}}">{{.Text}}</option>
+                    <option value="{{.Value}}" {{if .Selected}} selected {{end}}>{{.Text}}</option>
                 {{end}}
             </select>
-            <div class="d-none">Choose</div>
+            {{with .Form.Errors.Get "mpaaRating"}}
+                <div class="text-danger">{{.}}</div>
+            {{end}}
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
