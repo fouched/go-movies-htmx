@@ -47,6 +47,7 @@ func initApp() (*sql.DB, error) {
 		"dsn",
 		"host=localhost port=5432 user=fouche password=javac dbname=movies sslmode=disable timezone=UTC connect_timeout=5",
 		"Database connection string")
+	flag.StringVar(&app.APIKey, "api-key", "2824634c24070c272d34b330e82cba7c", "api key")
 	flag.Parse()
 
 	dbPool, err := repo.CreateDbPool(app.DSN)
