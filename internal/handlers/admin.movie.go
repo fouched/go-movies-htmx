@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// AdminMovieAddGet renders the movie page
+// AdminMovieAddGet renders the add movie page
 func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request) {
 
 	stringMap := make(map[string]string)
@@ -45,13 +45,12 @@ func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request)
 }
 
 func getRatings(s string) []models.SelectOption {
-
 	var ratings []models.SelectOption
 	ratings = append(ratings, models.SelectOption{Value: "G", Text: "G", Selected: s == "G"})
 	ratings = append(ratings, models.SelectOption{Value: "PG", Text: "PG", Selected: s == "PG"})
 	ratings = append(ratings, models.SelectOption{Value: "PG13", Text: "PG13", Selected: s == "PG13"})
 	ratings = append(ratings, models.SelectOption{Value: "R", Text: "R", Selected: s == "R"})
-	ratings = append(ratings, models.SelectOption{Value: "18A", Text: "18A", Selected: s == "18A"})
+	ratings = append(ratings, models.SelectOption{Value: "18", Text: "18", Selected: s == "18"})
 	return ratings
 }
 
