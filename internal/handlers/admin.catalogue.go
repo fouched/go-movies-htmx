@@ -19,7 +19,7 @@ func (a *HandlerConfig) AdminCatalogue(w http.ResponseWriter, r *http.Request) {
 			Message: "An unexpected error occurred, please try again later.",
 		}
 	} else {
-		data["movies"] = movies
+		data["Movies"] = movies
 	}
 
 	templates := []string{"/pages/admin/catalogue.gohtml"}

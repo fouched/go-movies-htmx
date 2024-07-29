@@ -7,6 +7,7 @@ import (
 	"github.com/fouched/go-movies-htmx/internal/render"
 	"github.com/fouched/go-movies-htmx/internal/repo"
 	"github.com/fouched/go-movies-htmx/internal/validation"
+	"github.com/go-chi/chi/v5"
 	"io"
 	"log"
 	"net/http"
@@ -19,11 +20,11 @@ import (
 func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request) {
 
 	stringMap := make(map[string]string)
-	stringMap["title"] = "Add Movie"
-	stringMap["action"] = "/admin/movies/add"
+	stringMap["Title"] = "Add Movie"
+	stringMap["Action"] = "/admin/movies/add"
 
 	data := make(map[string]interface{})
-	data["ratings"] = getRatings("")
+	data["Ratings"] = getRatings("")
 
 	genres, err := repo.GetAllGenres()
 	if err != nil {
@@ -35,6 +36,39 @@ func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request)
 	} else {
 		data["Genres"] = genres
 	}
+
+	templates := []string{"/pages/admin/movie.add.gohtml"}
+	render.Templates(w, r, templates, true, &models.TemplateData{
+		Form:      validation.New(nil),
+		Data:      data,
+		StringMap: stringMap,
+	})
+}
+
+// AdminMovieEditGet renders the add movie page
+func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request) {
+
+	stringMap := make(map[string]string)
+	stringMap["Title"] = "Edit Movie"
+	stringMap["Action"] = "/admin/movies/edit"
+
+	id := chi.URLParam(r, "id")
+	movieID, err := strconv.Atoi(id)
+
+	data := make(map[string]interface{})
+
+	movie, err := repo.GetMovieByID(movieID)
+	if err != nil {
+		fmt.Println(err)
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+	} else {
+		data["Movie"] = movie
+	}
+
+	data["Ratings"] = getRatings(movie.MPAARating)
 
 	templates := []string{"/pages/admin/movie.add.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{
@@ -104,8 +138,8 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 
 	if !form.Valid() {
 		data := make(map[string]interface{})
-		data["ratings"] = getRatings(r.Form.Get("mpaaRating"))
-		data["movie"] = movie
+		data["Ratings"] = getRatings(r.Form.Get("mpaaRating"))
+		data["Movie"] = movie
 		data["Genres"] = genres
 
 		// re-render the form that did not pass validation

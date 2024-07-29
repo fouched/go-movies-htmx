@@ -22,7 +22,7 @@ func (a *HandlerConfig) AllMovies(w http.ResponseWriter, r *http.Request) {
 			Message: "An unexpected error occurred, please try again later.",
 		}
 	} else {
-		data["movies"] = movies
+		data["Movies"] = movies
 	}
 
 	templates := []string{"/pages/movies.gohtml"}

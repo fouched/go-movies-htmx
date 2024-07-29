@@ -1,9 +1,9 @@
 {{template "base" .}}
 {{define "content"}}
 <div>
-    <h2>{{.StringMap.title}}</h2>
+    <h2>{{.StringMap.Title}}</h2>
     <hr/>
-    <form action="{{.StringMap.action}}" method="post">
+    <form action="{{.StringMap.Action}}" method="post">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input
@@ -13,7 +13,7 @@
                     class="form-control"
                     placeholder=""
                     autocomplete="off"
-                    value="{{.Data.movie.Title}}"
+                    value="{{.Data.Movie.Title}}"
             />
             {{with .Form.Errors.Get "title"}}
                 <div class="text-danger">{{.}}</div>
@@ -27,7 +27,7 @@
                         type="date"
                         class="form-control"
                         {{if eq (.Form.Errors.Get "releaseDate") ""}}
-                            value="{{.Data.movie.ReleaseDate.Format "2006-01-02"}}"
+                            value="{{.Data.Movie.ReleaseDate.Format "2006-01-02"}}"
                         {{end}}
                 />
                 {{with .Form.Errors.Get "releaseDate"}}
@@ -46,7 +46,7 @@
                         placeholder=""
                         autocomplete="off"
                         {{if eq (.Form.Errors.Get "runtime") ""}}
-                            value="{{.Data.movie.RunTime}}"
+                            value="{{.Data.Movie.RunTime}}"
                         {{end}}
                 />
                 {{with .Form.Errors.Get "runtime"}}
@@ -61,7 +61,7 @@
                     class="form-select"
             >
                 <option value="">Choose...</option>
-                {{range .Data.ratings }}
+                {{range .Data.Ratings }}
                     <option value="{{.Value}}" {{if .Selected}} selected {{end}}>{{.Text}}</option>
                 {{end}}
             </select>
@@ -76,7 +76,7 @@
                     name="description"
                     class="form-control"
                     rows="3"
-            >{{.Data.movie.Description}}</textarea>
+            >{{.Data.Movie.Description}}</textarea>
             {{with .Form.Errors.Get "description"}}
                 <div class="text-danger">{{.}}</div>
             {{end}}
