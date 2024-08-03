@@ -33,7 +33,7 @@ func main() {
 		Addr:    port,
 		Handler: routes(),
 	}
-	fmt.Println(fmt.Sprintf("Starting application on %s", port))
+	fmt.Printf("Starting application on %s\n", port)
 
 	err = srv.ListenAndServe()
 	if err != nil {
