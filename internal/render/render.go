@@ -41,7 +41,7 @@ func Templates(w http.ResponseWriter, r *http.Request, tmpl []string, addBaseTem
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 
 	if helpers.IsAuthenticated(r) {
-		td.IsAuthenticated = 1
+		td.IsAuthenticated = true
 	}
 
 	return td

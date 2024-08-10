@@ -18,7 +18,7 @@
                     <h1 class="mt-3">Go Watch a Movie - HTMX!</h1>
                 </div>
                 <div class="col text-end">
-                    {{if eq .IsAuthenticated 1 }}
+                    {{if eq .IsAuthenticated true }}
                         <a href="/logout"><span class="badge bg-danger">Logout</span></a>
                     {{else}}
                         <a href="/login"><span class="badge bg-success">Login</span></a>
@@ -35,7 +35,7 @@
                             <a href="/" class="list-group-item list-group-item-action">Home</a>
                             <a href="/movies" class="list-group-item list-group-item-action">Movies</a>
                             <a href="/genres" class="list-group-item list-group-item-action">Genres</a>
-                            {{if eq .IsAuthenticated 1 }}
+                            {{if eq .IsAuthenticated true }}
                                 <a href="/admin/movies/add" class="list-group-item list-group-item-action">Add Movie</a>
                                 <a href="/admin/catalogue" class="list-group-item list-group-item-action">Manage Catalogue</a>
                                 <a href="/admin/graphql" class="list-group-item list-group-item-action">GraphQL</a>
