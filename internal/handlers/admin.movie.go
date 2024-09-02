@@ -24,7 +24,6 @@ func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request)
 	stringMap["Action"] = "/admin/movies/add"
 
 	data := make(map[string]interface{})
-	data["Ratings"] = getRatings("")
 
 	genres, err := repo.GetAllGenres()
 	if err != nil {
@@ -36,6 +35,8 @@ func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request)
 	} else {
 		data["Genres"] = genres
 	}
+
+	data["Ratings"] = getRatings("")
 
 	templates := []string{"/pages/admin/movie.add.gohtml"}
 	render.Templates(w, r, templates, true, &models.TemplateData{
@@ -66,6 +67,27 @@ func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request
 		}
 	} else {
 		data["Movie"] = movie
+	}
+
+	allGenres, err := repo.GetAllGenres()
+
+	// pre-select the movie's genres
+	for _, genre := range allGenres {
+		for _, movieGenre := range movie.Genres {
+			if genre.ID == movieGenre.ID {
+				genre.Checked = true
+			}
+		}
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+	} else {
+		data["Genres"] = allGenres
 	}
 
 	data["Ratings"] = getRatings(movie.MPAARating)
