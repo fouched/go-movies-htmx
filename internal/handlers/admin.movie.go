@@ -100,16 +100,6 @@ func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request
 	})
 }
 
-func getRatings(s string) []models.SelectOption {
-	var ratings []models.SelectOption
-	ratings = append(ratings, models.SelectOption{Value: "G", Text: "G", Selected: s == "G"})
-	ratings = append(ratings, models.SelectOption{Value: "PG", Text: "PG", Selected: s == "PG"})
-	ratings = append(ratings, models.SelectOption{Value: "PG13", Text: "PG13", Selected: s == "PG13"})
-	ratings = append(ratings, models.SelectOption{Value: "R", Text: "R", Selected: s == "R"})
-	ratings = append(ratings, models.SelectOption{Value: "18", Text: "18", Selected: s == "18"})
-	return ratings
-}
-
 func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -138,7 +128,11 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 		RunTime:     runtime,
 		ReleaseDate: releaseDate,
 		Genres:      genres,
+		MPAARating:  r.Form.Get("mpaaRating"),
 	}
+
+	// try to get an image
+	movie = a.getPoster(movie)
 
 	form := validation.New(r.PostForm)
 
@@ -177,10 +171,9 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 
 	// try to get an image
 	movie = a.getPoster(movie)
-
+	// add date fields
 	movie.CreatedAt = time.Now()
 	movie.UpdatedAt = time.Now()
-	movie.MPAARating = r.Form.Get("mpaaRating")
 
 	// insert the movie
 	newID, err := repo.InsertMovie(&movie)
@@ -214,6 +207,118 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 	// Good practice: prevent a post re-submit with a http redirect
 	http.Redirect(w, r, "/admin/catalogue", http.StatusSeeOther)
 
+}
+
+func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	runtime, err := strconv.Atoi(r.Form.Get("runtime"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rd := r.Form.Get("releaseDate")
+	layout := "2006-01-02"
+	releaseDate, err := time.Parse(layout, rd)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	genres, _ := repo.GetAllGenres()
+	selectedGenres := r.Form["genres"]
+
+	movieId, _ := strconv.Atoi(r.Form.Get("movieId"))
+
+	// read form data
+	movie := models.Movie{
+		ID:          movieId,
+		Title:       r.Form.Get("title"),
+		Description: r.Form.Get("description"),
+		RunTime:     runtime,
+		ReleaseDate: releaseDate,
+		Genres:      genres,
+		MPAARating:  r.Form.Get("mpaaRating"),
+	}
+
+	form := validation.New(r.PostForm)
+
+	// deal with validation errors
+	form.Required("title", "releaseDate", "runtime", "mpaaRating", "description")
+
+	if len(selectedGenres) == 0 {
+		form.Errors.Add("genres", "Please select a genre")
+	} else {
+		for _, genre := range genres {
+			for _, selectedGenre := range selectedGenres {
+				sg, _ := strconv.Atoi(selectedGenre)
+				if genre.ID == sg {
+					genre.Checked = true
+				}
+			}
+		}
+	}
+
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["Ratings"] = getRatings(r.Form.Get("mpaaRating"))
+		data["Movie"] = movie
+		data["Genres"] = genres
+
+		// re-render the form that did not pass validation
+		templates := []string{"/pages/admin/movie.add.gohtml"}
+		render.Templates(w, r, templates, true, &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+
+	// validation passed update the movie
+	movie.UpdatedAt = time.Now()
+	err = repo.UpdateMovie(&movie)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// handle genres
+	var ga []int
+	for _, selectedGenre := range selectedGenres {
+		sg, _ := strconv.Atoi(selectedGenre)
+		ga = append(ga, sg)
+	}
+	movie.GenresArray = ga
+
+	err = repo.UpdateMovieGenres(movie.ID, movie.GenresArray)
+	if err != nil {
+		fmt.Println(err)
+		data := make(map[string]interface{})
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+		templates := []string{"/pages/home.gohtml"}
+		render.Templates(w, r, templates, true, &models.TemplateData{
+			Data: data,
+		})
+		return
+	}
+
+	// Good practice: prevent a post re-submit with a http redirect
+	http.Redirect(w, r, "/admin/catalogue", http.StatusSeeOther)
+
+}
+
+func getRatings(s string) []models.SelectOption {
+	var ratings []models.SelectOption
+	ratings = append(ratings, models.SelectOption{Value: "G", Text: "G", Selected: s == "G"})
+	ratings = append(ratings, models.SelectOption{Value: "PG", Text: "PG", Selected: s == "PG"})
+	ratings = append(ratings, models.SelectOption{Value: "PG13", Text: "PG13", Selected: s == "PG13"})
+	ratings = append(ratings, models.SelectOption{Value: "R", Text: "R", Selected: s == "R"})
+	ratings = append(ratings, models.SelectOption{Value: "18", Text: "18", Selected: s == "18"})
+	return ratings
 }
 
 func (a *HandlerConfig) getPoster(movie models.Movie) models.Movie {
