@@ -269,8 +269,8 @@ func UpdateMovie(movie *models.Movie) error {
 	defer cancel()
 
 	stmt := `update movies set title = $1, description = $2, release_date =$3, 
-                  runtime = $4, mpaa_rating = $5, updated_at = $6, image = $7 
-				where id = $8`
+                  runtime = $4, mpaa_rating = $5, updated_at = $6 
+				where id = $7`
 
 	_, err := db.ExecContext(ctx, stmt,
 		movie.Title,
@@ -279,7 +279,6 @@ func UpdateMovie(movie *models.Movie) error {
 		movie.RunTime,
 		movie.MPAARating,
 		movie.UpdatedAt,
-		movie.Image,
 		movie.ID)
 
 	if err != nil {
