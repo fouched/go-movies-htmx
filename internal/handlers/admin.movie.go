@@ -101,53 +101,31 @@ func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request
 }
 
 func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request) {
+
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	runtime, err := strconv.Atoi(r.Form.Get("runtime"))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	rd := r.Form.Get("releaseDate")
-	layout := "2006-01-02"
-	releaseDate, err := time.Parse(layout, rd)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	genres, _ := repo.GetAllGenres()
-	selectedGenres := r.Form["genres"]
-
-	// read form data
-	movie := models.Movie{
-		Title:       r.Form.Get("title"),
-		Description: r.Form.Get("description"),
-		RunTime:     runtime,
-		ReleaseDate: releaseDate,
-		Genres:      genres,
-		MPAARating:  r.Form.Get("mpaaRating"),
-	}
-
-	// try to get an image
-	movie = a.getPoster(movie)
 
 	form := validation.New(r.PostForm)
 
 	// deal with validation errors
 	form.Required("title", "releaseDate", "runtime", "mpaaRating", "description")
 
+	selectedGenres := r.Form["genres"]
 	if len(selectedGenres) == 0 {
 		form.Errors.Add("genres", "Please select a genre")
-	} else {
-		for _, genre := range genres {
-			for _, selectedGenre := range selectedGenres {
-				sg, _ := strconv.Atoi(selectedGenre)
-				if genre.ID == sg {
-					genre.Checked = true
-				}
+	}
+
+	genres, _ := repo.GetAllGenres()
+	movie := parseMovieForm(r, genres)
+
+	// set selected genres in case the form will be re-displayed
+	for _, genre := range genres {
+		for _, selectedGenre := range selectedGenres {
+			sg, _ := strconv.Atoi(selectedGenre)
+			if genre.ID == sg {
+				genre.Checked = true
 			}
 		}
 	}
@@ -191,7 +169,16 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 
 	err = repo.UpdateMovieGenres(newID, movie.GenresArray)
 	if err != nil {
-		HandleUnexpectedError(err, w, r)
+		fmt.Println(err)
+		data := make(map[string]interface{})
+		data["Alert"] = models.Alert{
+			Class:   "alert-danger",
+			Message: "An unexpected error occurred, please try again later.",
+		}
+		templates := []string{"/pages/home.gohtml"}
+		render.Templates(w, r, templates, true, &models.TemplateData{
+			Data: data,
+		})
 		return
 	}
 
@@ -201,39 +188,13 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 }
 
 func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Request) {
+
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	runtime, err := strconv.Atoi(r.Form.Get("runtime"))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	rd := r.Form.Get("releaseDate")
-	layout := "2006-01-02"
-	releaseDate, err := time.Parse(layout, rd)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	genres, _ := repo.GetAllGenres()
-	selectedGenres := r.Form["genres"]
-
-	movieId, _ := strconv.Atoi(r.Form.Get("movieId"))
-
-	// read form data
-	movie := models.Movie{
-		ID:          movieId,
-		Title:       r.Form.Get("title"),
-		Description: r.Form.Get("description"),
-		RunTime:     runtime,
-		ReleaseDate: releaseDate,
-		Genres:      genres,
-		MPAARating:  r.Form.Get("mpaaRating"),
-	}
-
+	// deal with validation errors
 	form := validation.New(r.PostForm)
 
 	// deal with validation errors
@@ -241,13 +202,17 @@ func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Reques
 
 	if len(selectedGenres) == 0 {
 		form.Errors.Add("genres", "Please select a genre")
-	} else {
-		for _, genre := range genres {
-			for _, selectedGenre := range selectedGenres {
-				sg, _ := strconv.Atoi(selectedGenre)
-				if genre.ID == sg {
-					genre.Checked = true
-				}
+	}
+
+	genres, _ := repo.GetAllGenres()
+	movie := parseMovieForm(r, genres)
+
+	// set selected genres in case the form will be re-displayed
+	for _, genre := range movie.Genres {
+		for _, selectedGenre := range selectedGenres {
+			sg, _ := strconv.Atoi(selectedGenre)
+			if genre.ID == sg {
+				genre.Checked = true
 			}
 		}
 	}
@@ -313,6 +278,36 @@ func (a *HandlerConfig) AdminMovieDeletePost(w http.ResponseWriter, r *http.Requ
 
 	// Good practice: prevent a post re-submit with a http redirect
 	http.Redirect(w, r, "/admin/catalogue", http.StatusSeeOther)
+
+}
+
+func parseMovieForm(r *http.Request, genres []*models.Genre) models.Movie {
+
+	runtime, err := strconv.Atoi(r.Form.Get("runtime"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rd := r.Form.Get("releaseDate")
+	releaseDate, err := time.Parse(time.DateOnly, rd)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	movieId, _ := strconv.Atoi(r.Form.Get("movieId"))
+
+	// read form data
+	movie := models.Movie{
+		ID:          movieId,
+		Title:       r.Form.Get("title"),
+		Description: r.Form.Get("description"),
+		RunTime:     runtime,
+		ReleaseDate: releaseDate,
+		Genres:      genres,
+		MPAARating:  r.Form.Get("mpaaRating"),
+	}
+
+	return movie
 }
 
 func getRatings(s string) []models.SelectOption {
