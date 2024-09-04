@@ -4,23 +4,28 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/fouched/go-movies-htmx/internal/models"
 )
 
-func AllMovies() ([]*models.Movie, error) {
-
+func AllMovies(genre ...int) ([]*models.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `
+	where := ""
+	if len(genre) > 0 {
+		where = fmt.Sprintf("where id in (select movie_id from movies_genres where genre_id = %d) ", genre[0])
+	}
+
+	query := fmt.Sprintf(`
 		select 
 			id, title, release_date, runtime, mpaa_rating, description,
 			coalesce(image, ''), created_at, updated_at
 		from
-		    movies
+		    movies %s
 		order by
 		    title		
-	`
+	`, where)
 
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
@@ -208,7 +213,7 @@ func GetMovieByIDForEdit(id int) (*models.Movie, []*models.Genre, error) {
 	return &movie, allGenres, nil
 }
 
-func GetAllGenres() ([]*models.Genre, error) {
+func AllGenres() ([]*models.Genre, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 

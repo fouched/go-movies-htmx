@@ -3,5 +3,12 @@
 <div class="text-center">
     <h2>Genres</h2>
     <hr/>
+        <div class="list-group text-start">
+            {{ range .Data.Genres}}
+                <a href="/genres/{{.ID}}" class="list-group-item list-group-item-action">{{.Genre}}</a>
+            {{end}}
+        </div>
+    </div>
+
 </div>
 {{end}}

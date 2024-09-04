@@ -25,7 +25,7 @@ func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request)
 
 	data := make(map[string]interface{})
 
-	genres, err := repo.GetAllGenres()
+	genres, err := repo.AllGenres()
 	if err != nil {
 		HandleUnexpectedError(err, w, r)
 		return
@@ -61,7 +61,7 @@ func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request
 	}
 
 	data["Movie"] = movie
-	allGenres, err := repo.GetAllGenres()
+	allGenres, err := repo.AllGenres()
 
 	// pre-select the movie's genres
 	for _, genre := range allGenres {
@@ -106,7 +106,7 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 		form.Errors.Add("genres", "Please select a genre")
 	}
 
-	genres, _ := repo.GetAllGenres()
+	genres, _ := repo.AllGenres()
 	movie := parseMovieForm(r, genres)
 
 	// set selected genres in case the form will be re-displayed
@@ -186,7 +186,7 @@ func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Reques
 		form.Errors.Add("genres", "Please select a genre")
 	}
 
-	genres, _ := repo.GetAllGenres()
+	genres, _ := repo.AllGenres()
 	movie := parseMovieForm(r, genres)
 
 	// set selected genres in case the form will be re-displayed
