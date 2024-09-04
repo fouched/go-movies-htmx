@@ -27,6 +27,7 @@ func routes() http.Handler {
 		mux.Post("/movies/add", handlers.Instance.AdminMovieAddPost)
 		mux.Get("/movies/{id}", handlers.Instance.AdminMovieEditGet)
 		mux.Post("/movies/edit", handlers.Instance.AdminMovieEditPost)
+		mux.Post("/movies/delete/", handlers.Instance.AdminMovieDeletePost)
 		mux.Get("/catalogue", handlers.Instance.AdminCatalogue)
 		mux.Get("/graphql", handlers.Instance.AdminGraphQL)
 	})

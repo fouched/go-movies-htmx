@@ -308,3 +308,17 @@ func UpdateMovieGenres(id int, genreIDs []int) error {
 
 	return nil
 }
+
+func DeleteMovie(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `delete from movies where id = $1`
+
+	_, err := db.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

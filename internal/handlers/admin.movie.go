@@ -191,16 +191,7 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 
 	err = repo.UpdateMovieGenres(newID, movie.GenresArray)
 	if err != nil {
-		fmt.Println(err)
-		data := make(map[string]interface{})
-		data["Alert"] = models.Alert{
-			Class:   "alert-danger",
-			Message: "An unexpected error occurred, please try again later.",
-		}
-		templates := []string{"/pages/home.gohtml"}
-		render.Templates(w, r, templates, true, &models.TemplateData{
-			Data: data,
-		})
+		HandleUnexpectedError(err, w, r)
 		return
 	}
 
@@ -293,22 +284,35 @@ func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Reques
 
 	err = repo.UpdateMovieGenres(movie.ID, movie.GenresArray)
 	if err != nil {
-		fmt.Println(err)
-		data := make(map[string]interface{})
-		data["Alert"] = models.Alert{
-			Class:   "alert-danger",
-			Message: "An unexpected error occurred, please try again later.",
-		}
-		templates := []string{"/pages/home.gohtml"}
-		render.Templates(w, r, templates, true, &models.TemplateData{
-			Data: data,
-		})
+		HandleUnexpectedError(err, w, r)
 		return
 	}
 
 	// Good practice: prevent a post re-submit with a http redirect
 	http.Redirect(w, r, "/admin/catalogue", http.StatusSeeOther)
 
+}
+
+func (a *HandlerConfig) AdminMovieDeletePost(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	movieId, err := strconv.Atoi(r.Form.Get("movieId"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = repo.DeleteMovie(movieId)
+	if err != nil {
+		HandleUnexpectedError(err, w, r)
+		return
+	}
+
+	// Good practice: prevent a post re-submit with a http redirect
+	http.Redirect(w, r, "/admin/catalogue", http.StatusSeeOther)
 }
 
 func getRatings(s string) []models.SelectOption {
