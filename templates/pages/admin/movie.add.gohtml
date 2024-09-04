@@ -103,6 +103,29 @@
         <hr />
         <input type="hidden" name="movieId" id="movieId" value="{{.Data.Movie.ID}}"/>
         <input type="submit" class="btn btn-primary" value="Save">
+        {{if ne .Data.Movie.ID nil}}
+            <a href="#" class="btn btn-danger ms-2" onClick="confirmDelete()">Delete</a>
+        {{end}}
     </form>
 </div>
+{{end}}
+{{define "js"}}
+<script lang="javascript">
+    const confirmDelete = () => {
+        Swal.fire({
+            title: "Delete movie?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.forms[0].action = "/admin/movies/delete"
+                document.forms[0].submit()
+            }
+        });
+    }
+</script>
 {{end}}

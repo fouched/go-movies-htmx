@@ -237,7 +237,8 @@ func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Reques
 	movie.UpdatedAt = time.Now()
 	err = repo.UpdateMovie(&movie)
 	if err != nil {
-		fmt.Println(err)
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
 	// handle genres
