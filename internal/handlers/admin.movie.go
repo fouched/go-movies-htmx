@@ -199,6 +199,7 @@ func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Reques
 
 	// deal with validation errors
 	form.Required("title", "releaseDate", "runtime", "mpaaRating", "description")
+	selectedGenres := r.Form["genres"]
 
 	if len(selectedGenres) == 0 {
 		form.Errors.Add("genres", "Please select a genre")
