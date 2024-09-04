@@ -27,15 +27,11 @@ func (a *HandlerConfig) AdminMovieAddGet(w http.ResponseWriter, r *http.Request)
 
 	genres, err := repo.GetAllGenres()
 	if err != nil {
-		fmt.Println(err)
-		data["Alert"] = models.Alert{
-			Class:   "alert-danger",
-			Message: "An unexpected error occurred, please try again later.",
-		}
-	} else {
-		data["Genres"] = genres
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
+	data["Genres"] = genres
 	data["Ratings"] = getRatings("")
 
 	templates := []string{"/pages/admin/movie.add.gohtml"}
@@ -60,15 +56,11 @@ func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request
 
 	movie, err := repo.GetMovieByID(movieID)
 	if err != nil {
-		fmt.Println(err)
-		data["Alert"] = models.Alert{
-			Class:   "alert-danger",
-			Message: "An unexpected error occurred, please try again later.",
-		}
-	} else {
-		data["Movie"] = movie
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
+	data["Movie"] = movie
 	allGenres, err := repo.GetAllGenres()
 
 	// pre-select the movie's genres
@@ -81,15 +73,11 @@ func (a *HandlerConfig) AdminMovieEditGet(w http.ResponseWriter, r *http.Request
 	}
 
 	if err != nil {
-		fmt.Println(err)
-		data["Alert"] = models.Alert{
-			Class:   "alert-danger",
-			Message: "An unexpected error occurred, please try again later.",
-		}
-	} else {
-		data["Genres"] = allGenres
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
+	data["Genres"] = allGenres
 	data["Ratings"] = getRatings(movie.MPAARating)
 
 	templates := []string{"/pages/admin/movie.add.gohtml"}
@@ -104,7 +92,8 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println(err)
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
 	form := validation.New(r.PostForm)
@@ -169,16 +158,7 @@ func (a *HandlerConfig) AdminMovieAddPost(w http.ResponseWriter, r *http.Request
 
 	err = repo.UpdateMovieGenres(newID, movie.GenresArray)
 	if err != nil {
-		fmt.Println(err)
-		data := make(map[string]interface{})
-		data["Alert"] = models.Alert{
-			Class:   "alert-danger",
-			Message: "An unexpected error occurred, please try again later.",
-		}
-		templates := []string{"/pages/home.gohtml"}
-		render.Templates(w, r, templates, true, &models.TemplateData{
-			Data: data,
-		})
+		HandleUnexpectedError(err, w, r)
 		return
 	}
 
@@ -191,7 +171,8 @@ func (a *HandlerConfig) AdminMovieEditPost(w http.ResponseWriter, r *http.Reques
 
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println(err)
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
 	// deal with validation errors
@@ -264,12 +245,14 @@ func (a *HandlerConfig) AdminMovieDeletePost(w http.ResponseWriter, r *http.Requ
 
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println(err)
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
 	movieId, err := strconv.Atoi(r.Form.Get("movieId"))
 	if err != nil {
-		fmt.Println(err)
+		HandleUnexpectedError(err, w, r)
+		return
 	}
 
 	err = repo.DeleteMovie(movieId)
