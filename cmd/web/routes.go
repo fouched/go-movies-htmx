@@ -20,6 +20,7 @@ func routes() http.Handler {
 	mux.Get("/movies", handlers.Instance.AllMovies)
 	mux.Get("/movies/{id}", handlers.Instance.Movie)
 	mux.Get("/genres", handlers.Instance.Genres)
+	mux.Get("/genre/{id}/{genreName}", handlers.Instance.OneGenre)
 
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(Auth)

@@ -1,0 +1,28 @@
+{{template "base" .}}
+{{define "content"}}
+    <h2>Genre: {{ .StringMap.GenreName }}</h2>
+    <hr/>
+    {{ if gt (len .Data.Movies) 0 }}
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Release Date</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range .Data.Movies}}
+            <tr>
+                <td><a href="/movies/{{ .ID }}">{{ .Title }}</a></td>
+                <td>{{ .ReleaseDate.Format "2006-01-02" }}</td>
+                <td>{{ .MPAARating }}</td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+    {{ end }}
+    {{ if eq (len .Data.Movies) 0 }}
+        <p>No movies in this genre (yet)!</p>
+    {{ end }}
+{{end}}
