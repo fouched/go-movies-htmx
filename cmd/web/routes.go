@@ -21,6 +21,8 @@ func routes() http.Handler {
 	mux.Get("/movies/{id}", handlers.Instance.Movie)
 	mux.Get("/genres", handlers.Instance.Genres)
 	mux.Get("/genre/{id}/{genreName}", handlers.Instance.OneGenre)
+	mux.Get("/graphql", handlers.Instance.GraphQLGet)
+	mux.Post("/graphql", handlers.Instance.GraphQLPost)
 
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(Auth)
@@ -30,7 +32,6 @@ func routes() http.Handler {
 		mux.Post("/movies/edit", handlers.Instance.AdminMovieEditPost)
 		mux.Post("/movies/delete", handlers.Instance.AdminMovieDeletePost)
 		mux.Get("/catalogue", handlers.Instance.AdminCatalogue)
-		mux.Get("/graphql", handlers.Instance.AdminGraphQL)
 	})
 
 	fileServer := http.FileServer(http.Dir("./static/"))

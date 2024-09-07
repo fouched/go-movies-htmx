@@ -3,7 +3,7 @@
 <div>
     <h2>Genres</h2>
     <hr/>
-    <div class="list-group text-start">
+    <div class="list-group">
         {{ range .Data.Genres}}
             <a href="/genre/{{.ID}}/{{.Genre}}" class="list-group-item list-group-item-action">{{.Genre}}</a>
         {{end}}

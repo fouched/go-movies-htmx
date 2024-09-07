@@ -1,0 +1,21 @@
+{{template "base" .}}
+{{define "content"}}
+<div>
+    <h2>GraphQL</h2>
+    <hr/>
+    <form hx-post="/graphql" hx-target="#graphResults" hx-swap="innerHTML" hx-trigger="load">
+        <label for="search" class="form-label">Search Term</label>
+        <input type="text" id="search" name="search" class="form-control" autocomplete="off"
+               hx-post="/graphql"
+               hx-target="#graphResults"
+               hx-swap="innerHTML"
+               hx-trigger="change, keyup delay:250ms changed"
+        >
+        <br>
+        <!-- Do not boost dynamic content rendered by form on load-->
+        <div id="graphResults" hx-boost="false">
+            <!-- HTMX snippet will load here -->
+        </div>
+    </form>
+</div>
+{{end}}
